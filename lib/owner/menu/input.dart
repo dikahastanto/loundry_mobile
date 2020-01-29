@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/Settings.dart';
@@ -28,12 +27,6 @@ class _InputState extends State<Input> with SingleTickerProviderStateMixin {
 
   Future getImageGalery() async {
 
-
-//    var permissions = await Permission.getPermissionsStatus([PermissionName.Calendar, PermissionName.Camera]);
-//
-//    var permissionNames = await Permission.requestPermissions([PermissionName.Calendar, PermissionName.Camera]);
-//    Permission.openSettings;
-//    print(permissions);
     var imageFile = await ImagePicker.pickImage(
         source: ImageSource.gallery
     );
@@ -49,8 +42,6 @@ class _InputState extends State<Input> with SingleTickerProviderStateMixin {
   }
 
   Future<void> upload(File imagefile) async{
-//    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-//    String nama = sharedPreferences.getString("nama_sanggar");
 
     var stream = new http.ByteStream(DelegatingStream.typed(imagefile.openRead()));
 

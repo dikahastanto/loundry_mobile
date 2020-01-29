@@ -4,6 +4,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_app/pelanggan/detail.dart';
+import 'package:flutter_app/pelanggan/Pesan.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -13,7 +14,6 @@ class Home extends StatefulWidget {
 Future<List> getData() async {
   var url = masterurl + "produk/allporduk";
   final respon = await http.get(url);
-//    print(json.decode(respon.body));
   return json.decode(respon.body);
 
 }
@@ -49,7 +49,6 @@ class _HomeState extends State<Home> {
                       child: new CircularProgressIndicator(),
                     ),
                   );
-
             },
             future: getData(),
           )
@@ -133,18 +132,25 @@ class ItemList extends StatelessWidget {
                       ),
                       Row(
                         children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.all(10.0),
-                            decoration: BoxDecoration(
-                                color: secondary,
-                                borderRadius: BorderRadius.circular(10.0)
-                            ),
-                            alignment: Alignment.center,
-                            child: Text(
-                              'Pesan Sekarang',
-                              style: TextStyle(
-                                color: fourth,
-                                fontSize: 15.0
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(new MaterialPageRoute(
+                                builder: (BuildContext context) => new Pesan(list: list,index: i,)
+                              ));
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(10.0),
+                              decoration: BoxDecoration(
+                                  color: secondary,
+                                  borderRadius: BorderRadius.circular(10.0)
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(
+                                'Pesan Sekarang',
+                                style: TextStyle(
+                                    color: fourth,
+                                    fontSize: 15.0
+                                ),
                               ),
                             ),
                           ),
