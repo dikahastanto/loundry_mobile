@@ -33,7 +33,6 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       "password": controllerpassword.text
     });
 
-
     var result = json.decode(response.body);
 
     if (result['sukses']) {
@@ -42,7 +41,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         sharedPreferences.setString("email", result['user']['email']);
         sharedPreferences.setString("namaLengkap", result['user']['namaLengkap']);
         sharedPreferences.setString("alamat", result['user']['alamat']);
-        sharedPreferences.setString("alamat", result['user']['level'].toString());
+        sharedPreferences.setString("level", result['user']['level'].toString());
         sharedPreferences.setBool("status", true);
       });
 

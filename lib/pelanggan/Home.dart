@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Settings.dart';
 import 'package:flutter_app/pelanggan/menu/home.dart' as tabHome;
+import 'package:flutter_app/pelanggan/menu/order.dart' as tabOrder;
 
 class Home extends StatefulWidget {
   @override
@@ -37,8 +38,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
             tabs: <Widget>[
               new Tab(icon: new Icon(Icons.home)),
               new Tab(icon: new Icon(Icons.assignment)),
-              new Tab(icon: new Icon(Icons.wc)),
-              new Tab(icon: new Icon(Icons.people)),
+              new Tab(icon: new Icon(Icons.search)),
+              new Tab(icon: new Icon(Icons.person_outline)),
             ],
           ),
         ),
@@ -46,7 +47,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
             controller: controller,
             children: <Widget>[
               new tabHome.Home(),
-              new tabHome.Home(),
+              new tabOrder.Order(),
               new tabHome.Home(),
               new tabHome.Home()
             ]
