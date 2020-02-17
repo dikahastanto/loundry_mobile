@@ -67,13 +67,13 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: new Center(
           child: new Container(
             child: new Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-//                new Image.asset("img/logo.png",width: 250.0,),
-                new Icon(Icons.cloud,size: 100.0,),
+                new Image.asset("img/bg.png",width: 250.0,),
                 new Padding(padding: new EdgeInsets.only(top: 25.0)),
                 new CircularProgressIndicator()
               ],

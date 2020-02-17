@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Settings.dart';
+import 'package:flutter_app/pelanggan/menu/home.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -62,7 +63,7 @@ class ItemList extends StatelessWidget {
     return status.toString();
   }
 
-  void _showDialog(BuildContext context, id) {
+  void _showDialog(BuildContext context, id, code) {
     // flutter defined function
     showDialog(
       context: context,
@@ -76,7 +77,11 @@ class ItemList extends StatelessWidget {
             new FlatButton(
               child: new Text("Ya"),
               onPressed: () {
-                confirm(context, id);
+                if (code == 1) {
+                  confirm(context, id);
+                } else {
+                  selesai(context, id);
+                }
               },
             ),
             new FlatButton(
@@ -145,9 +150,15 @@ class ItemList extends StatelessWidget {
 
   void confirm (BuildContext context,id) async {
     final response = await http.post(masterurl + 'transaksi/confirm/' + id.toString());
-//    print(response.body);
     var res = json.decode(response.body);
-        _showNotif(context, res['sukses']);
+    _showNotif(context, res['sukses']);
+    getData();
+  }
+
+  void selesai (BuildContext context,id) async {
+    final response = await http.post(masterurl + 'transaksi/selesai/' + id.toString());
+    var res = json.decode(response.body);
+    _showNotif(context, res['sukses']);
   }
 
   Widget Cel (int status) {
@@ -246,7 +257,7 @@ class ItemList extends StatelessWidget {
                           list[i]['status'] == 1 ?
                           GestureDetector(
                             onTap: () {
-                              _showDialog(context, list[i]['idTransaksi']);
+                              _showDialog(context, list[i]['idTransaksi'], 1);
                             },
                             child: Container(
                               padding: EdgeInsets.all(10.0),
@@ -265,7 +276,7 @@ class ItemList extends StatelessWidget {
                             ),
                           ) : GestureDetector(
                             onTap: () {
-                              _showSelesai(context, list[i]['idTransaksi']);
+                              _showDialog(context, list[i]['idTransaksi'], 2);
                             },
                             child: Container(
                               padding: EdgeInsets.all(10.0),

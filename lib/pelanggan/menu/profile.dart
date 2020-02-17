@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_app/pelanggan/detail.dart';
 import 'package:flutter_app/pelanggan/Pesan.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Profile extends StatefulWidget {
   Profile({this.id});
@@ -15,6 +16,9 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   AnimationController _controller;
+  bool sudahRating = false, pernahTransaksi = false;
+  double _nilaiRating = 0.0;
+  final globalKey = GlobalKey<ScaffoldState>();
 
   Future<List> getData() async {
     var url = masterurl + "produk/getuserporduk/" + widget.id;
@@ -23,7 +27,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
 
   }
 
-  String namaLengkap = '', alamat = '-';
+  String namaLengkap = '', alamat = '-', noRek="", namaBank="", atasNama = "";
   void getProfile () async {
     var url = masterurl + "getprofile/" + widget.id;
     final respon = await http.get(url);
@@ -31,13 +35,28 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
     setState(() {
       namaLengkap = res['namaLengkap'];
       alamat = res['alamat'];
+      _nilaiRating = res['totalRating'].toDouble();
+      noRek = res['noRek'];
+      namaBank = res['namaBank'];
+      atasNama = res['atasNama'];
+    });
+  }
+
+  void cekRating () async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var url = masterurl + "rating/getstatus/" + widget.id + "/" + sharedPreferences.getString('id');
+    final respon = await http.get(url);
+    var res = json.decode(respon.body);
+    setState(() {
+      sudahRating = res['sudahRating'];
+      pernahTransaksi = res['pernahTransaksi'];
     });
   }
 
 
-
   @override
   void initState() {
+    cekRating();
     getProfile();
     _controller = AnimationController(vsync: this);
     super.initState();
@@ -49,9 +68,153 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
+  Widget cek () {
+    if (sudahRating) {
+      return Column(
+        children: <Widget>[
+          RatingBarIndicator(
+            rating: _nilaiRating,
+            itemCount: 5,
+            itemSize: 30.0,
+            physics: BouncingScrollPhysics(),
+            itemBuilder: (context, _) => Icon(
+              Icons.star,
+              color: Colors.amber,
+            ),
+          ),
+          new Text(_nilaiRating.toString())
+        ],
+      );
+    } else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          RatingBarIndicator(
+            rating: _nilaiRating,
+            itemCount: 5,
+            itemSize: 30.0,
+            physics: BouncingScrollPhysics(),
+            itemBuilder: (context, _) => Icon(
+              Icons.star,
+              color: Colors.amber,
+            ),
+          ),
+          new Text(_nilaiRating.toString()),
+            Padding(padding: EdgeInsets.only(top: 5.0),),
+            GestureDetector(
+              onTap: () {
+                _settingModalBottomSheet(context);
+              },
+              child: Container(
+                width: 200.0,
+                padding: EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                    color: third,
+                    borderRadius: BorderRadius.circular(10.0)
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  'Beri Rating Sekarang',
+                  style: TextStyle(
+                      color: textColor,
+                      fontSize: 15.0
+                  ),
+                ),
+              ),
+            )
+        ],
+      );
+    }
+  }
+
+  void giveRating (rating) async {
+    var url = masterurl + 'rating/giverating';
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+
+    final response = await http.post(url, body: {
+      "idPelanggan": sharedPreferences.getString('id'),
+      "idOwner": widget.id,
+      "nilai": rating.toString()
+    });
+
+    var result = json.decode(response.body);
+    Navigator.pop(context);
+    if (result['sukses']) {
+      showSnackbar(result['msg'], Colors.greenAccent);
+      getProfile();
+    } else {
+      showSnackbar(result['msg'], Colors.redAccent);
+    }
+  }
+
+  void showSnackbar(msg, color) {
+    final snackBar = SnackBar(content: Text(msg), backgroundColor: color);
+    globalKey.currentState.showSnackBar(snackBar);
+  }
+
+  void _settingModalBottomSheet(context){
+    showModalBottomSheet(
+        elevation: 0.0,
+        context: context,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext bc){
+          return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Container(
+                color: Colors.transparent,
+                height: 150.0,
+                child: new Container(
+                    decoration: new BoxDecoration(
+                        color: fourth,
+                        borderRadius: new BorderRadius.only(
+                            topLeft: const Radius.circular(40.0),
+                            topRight: const Radius.circular(40.0))),
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          padding: EdgeInsets.only(top: 20.0),
+                          child: Text(
+                            "Beri Rating Sekarang",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20.0,
+                                color: textColor
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                        ),
+                        RatingBar(
+                          initialRating: 0,
+                          minRating: 1,
+                          direction: Axis.horizontal,
+                          allowHalfRating: true,
+                          itemCount: 5,
+                          itemSize: 30.0,
+                          itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                          itemBuilder: (context, _) => Icon(
+                            Icons.star,
+                            color: Colors.amber,
+                          ),
+                          onRatingUpdate: (rating) {
+                            giveRating(rating);
+                          },
+                        ),
+                      ],
+                    )
+                ),
+              );
+            },
+          );
+        }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      key: globalKey,
       appBar: AppBar(
         title: Text(
             'Profile',
@@ -77,8 +240,8 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                     margin: EdgeInsets.only(right: 20),
                     child: CircleAvatar(
                         backgroundColor: secondary,
-                        radius: 40,
-                        child: Icon(Icons.perm_identity, size: 50.0)
+                        radius: 60,
+                        child: Icon(Icons.perm_identity, size: 60.0)
                     ),
                   ),
                   Flexible(
@@ -102,31 +265,49 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                               fontWeight: FontWeight.w400
                           ),
                         ),
-                        RatingBarIndicator(
-                          rating: 4.0,
-                          itemCount: 5,
-                          itemSize: 30.0,
-                          physics: BouncingScrollPhysics(),
-                          itemBuilder: (context, _) => Icon(
-                            Icons.star,
-                            color: Colors.amber,
+                        Text(
+                          noRek + " - " + namaBank,
+                          style: TextStyle(
+                              color: textColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400
                           ),
                         ),
-                        RatingBar(
-                          initialRating: 3,
-                          minRating: 1,
-                          direction: Axis.horizontal,
-                          allowHalfRating: true,
-                          itemCount: 5,
-                          itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                          itemBuilder: (context, _) => Icon(
-                            Icons.star,
-                            color: Colors.amber,
+                        Text(
+                          "An " + atasNama,
+                          style: TextStyle(
+                              color: textColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400
                           ),
-                          onRatingUpdate: (rating) {
-                            print(rating);
-                          },
                         ),
+                        cek()
+//                        RatingBarIndicator(
+//                          rating: 4.0,
+//                          itemCount: 5,
+//                          itemSize: 30.0,
+//                          physics: BouncingScrollPhysics(),
+//                          itemBuilder: (context, _) => Icon(
+//                            Icons.star,
+//                            color: Colors.amber,
+//                          ),
+//                        ),
+//                        RatingBar(
+//                          initialRating: 0,
+//                          minRating: 1,
+//                          direction: Axis.horizontal,
+//                          allowHalfRating: true,
+//                          itemCount: 5,
+//                          itemSize: 30.0,
+//                          itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+//                          itemBuilder: (context, _) => Icon(
+//                            Icons.star,
+//                            color: Colors.amber,
+//                          ),
+//                          onRatingUpdate: (rating) {
+//                            print(rating);
+//                          },
+//                        ),
                       ],
                     ),
                   )

@@ -118,7 +118,7 @@ class ItemList extends StatelessWidget {
                           )
                       ),
                       RatingBarIndicator(
-                        rating: 4.0,
+                        rating: list[i]['totalRating'].toDouble(),
                         itemCount: 5,
                         itemSize: 20.0,
                         physics: BouncingScrollPhysics(),

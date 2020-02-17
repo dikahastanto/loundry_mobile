@@ -10,6 +10,8 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'dart:convert';
 import 'package:async/async.dart';
+import 'package:flutter_app/pelanggan/menu/profile.dart';
+import 'package:flutter/services.dart';
 
 class Detail extends StatefulWidget {
   Detail({this.list,this.index});
@@ -240,13 +242,41 @@ class _DetailState extends State<Detail> with SingleTickerProviderStateMixin {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      widget.list[widget.index]['nama'],
-                      style: TextStyle(
-                          fontSize: 25.0,
-                          fontWeight: FontWeight.bold,
-                          color: textColor
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          widget.list[widget.index]['nama'],
+                          style: TextStyle(
+                              fontSize: 25.0,
+                              fontWeight: FontWeight.bold,
+                              color: textColor
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(new MaterialPageRoute(
+                              builder: (BuildContext context) => new Profile(id: widget.list[widget.index]['id'].toString()),
+                            ));
+                          },
+                          child: Container(
+                            width: 200.0,
+                            padding: EdgeInsets.all(10.0),
+                            decoration: BoxDecoration(
+                                color: third,
+                                borderRadius: BorderRadius.circular(10.0)
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Kunjungi Profile',
+                              style: TextStyle(
+                                  color: textColor,
+                                  fontSize: 15.0
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     Padding(
                       padding: EdgeInsets.only(top: 10.0),
@@ -309,7 +339,7 @@ class _DetailState extends State<Detail> with SingleTickerProviderStateMixin {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Text(
-                          'Rating',
+                          'Rating Loundry',
                           style: TextStyle(
                               fontSize: 15.0,
                               fontWeight: FontWeight.w300,
@@ -318,7 +348,7 @@ class _DetailState extends State<Detail> with SingleTickerProviderStateMixin {
                         ),
 
                         RatingBarIndicator(
-                          rating: 4.0,
+                          rating: widget.list[widget.index]['totalRating'].toDouble(),
                           itemCount: 5,
                           itemSize: 20.0,
                           physics: BouncingScrollPhysics(),
@@ -329,6 +359,91 @@ class _DetailState extends State<Detail> with SingleTickerProviderStateMixin {
                         ),
                       ],
                     ),
+                    Padding(padding: EdgeInsets.only(top: 5.0)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          'No Telp',
+                          style: TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.w300,
+                              color: textColor
+                          ),
+                        ),
+                        Text(
+                          widget.list[widget.index]['noTelp'],
+                          style: TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.w300,
+                              color: textColor
+                          ),
+                        )
+                      ],
+                    ),
+                    Padding(padding: EdgeInsets.only(top: 5.0)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          'No Rek',
+                          style: TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.w300,
+                              color: textColor
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Clipboard.setData(new ClipboardData(text: widget.list[widget.index]['noRek'].toString()));
+                            showSnackbar('No Rek Telah Ter-copy', Colors.greenAccent);
+                          },
+                          child: Text(
+                            widget.list[widget.index]['noRek'].toString(),
+                          ),
+                        )
+//                        Text(
+//                          widget.list[widget.index]['noRek'],
+//                          style: TextStyle(
+//                              fontSize: 15.0,
+//                              fontWeight: FontWeight.w300,
+//                              color: textColor
+//                          ),
+//                        )
+                      ],
+                    ),
+                    Padding(padding: EdgeInsets.only(top: 5.0)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          'An No Rek',
+                          style: TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.w300,
+                              color: textColor
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Clipboard.setData(new ClipboardData(text: widget.list[widget.index]['noRek'].toString()));
+                            showSnackbar('No Rek Telah Ter-copy', Colors.greenAccent);
+                          },
+                          child: Text(
+                            widget.list[widget.index]['atasNama'].toString(),
+                          ),
+                        )
+//                        Text(
+//                          widget.list[widget.index]['noRek'],
+//                          style: TextStyle(
+//                              fontSize: 15.0,
+//                              fontWeight: FontWeight.w300,
+//                              color: textColor
+//                          ),
+//                        )
+                      ],
+                    ),
+                    Padding(padding: EdgeInsets.only(bottom: 120.0))
                   ],
                 )
               ),

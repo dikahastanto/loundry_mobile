@@ -63,7 +63,7 @@ class _InputState extends State<Input> with SingleTickerProviderStateMixin {
     var response = await request.send();
     var responseSTR = await response.stream.bytesToString();
     var res = json.decode(responseSTR);
-
+    print(res);
     if(res['sukses']){
       showSnackbar(res['msg'], suksesColor);
       reset();

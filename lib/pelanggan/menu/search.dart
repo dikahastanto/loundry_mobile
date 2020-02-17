@@ -61,6 +61,14 @@ class _SearchState extends State<Search> with SingleTickerProviderStateMixin {
             color: fourth,
             child: TextFormField(
               controller: controllerKeyword,
+              textInputAction: TextInputAction.search, onEditingComplete: () {
+                if (controllerKeyword.text != '') {
+                  setState(() {
+                    serarched = true;
+                  });
+                  FocusScope.of(context).requestFocus(FocusNode());
+              }
+            },
               decoration: new InputDecoration(
                   hintText: "Masukan Keyword",
                   border: InputBorder.none,
@@ -176,7 +184,7 @@ class ItemList extends StatelessWidget {
                             ),
                           ),
                           RatingBarIndicator(
-                            rating: 3,
+                            rating: list[i]['totalRating'].toDouble(),
                             itemCount: 5,
                             itemSize: 30.0,
                             physics: BouncingScrollPhysics(),

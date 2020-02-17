@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-var masterurl = "http://192.168.1.4:8000/";
+var masterurl = "http://192.168.1.12:8000/";
+//var masterurl = "http://192.168.1.4:8000/";
 final appbarcolor = Colors.lightBlue[900];
 final bgapp = Colors.grey[300];
 final primary = Color(0xff16a0e2);

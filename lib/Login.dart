@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_app/owner/Home.dart' as HomeOwner;
+import 'package:flutter_app/Register.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -33,6 +34,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       "password": controllerpassword.text
     });
 
+
     var result = json.decode(response.body);
 
     if (result['sukses']) {
@@ -41,11 +43,16 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         sharedPreferences.setString("email", result['user']['email']);
         sharedPreferences.setString("namaLengkap", result['user']['namaLengkap']);
         sharedPreferences.setString("alamat", result['user']['alamat']);
+        sharedPreferences.setString("noTelp", result['user']['noTelp']);
         sharedPreferences.setString("level", result['user']['level'].toString());
         sharedPreferences.setBool("status", true);
       });
 
      if (result['user']['level'] == 1) {
+       sharedPreferences.setString("rating", result['user']['totalRating'].toString());
+       sharedPreferences.setString("noRek", result['user']['noRek'].toString());
+       sharedPreferences.setString("atasNama", result['user']['atasNama'].toString());
+       sharedPreferences.setString("namaBank", result['user']['namaBank'].toString());
        Navigator.pushReplacement(
            context,
            new MaterialPageRoute(
@@ -175,65 +182,16 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                         ),
                       ),
                       SizedBox(height: 20,),
-                      Text("Register", style: TextStyle(color: Color.fromRGBO(143, 148, 251, 1)),),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacement(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (BuildContext context) => new Register()));
+                        },
+                        child: Text("Register", style: TextStyle(color: Color.fromRGBO(143, 148, 251, 1)),),
+                      ),
                       Padding(padding: EdgeInsets.only(bottom: 20),)
-//                      Container(
-//                        color: textColor,
-//                        padding: EdgeInsets.only(left: 10, right: 10),
-//                        child: new TextFormField(
-//                          controller: controllerusername,
-//                          validator: (value) {
-//                            if (value.isEmpty) {
-//                              return "Email Tidak Boleh Kosong";
-//                            }
-//                            return null;
-//                          },
-//                          decoration: new InputDecoration(
-//                              fillColor: Colors.red,
-//                              hintText: "Username",
-//                              labelText: "Username",
-//                              focusColor: Colors.red,
-//                              border: InputBorder.none
-//                          ),
-//                        ),
-//                      ),
-//                      new TextFormField(
-//                        controller: controllerpassword,
-//                        obscureText: true,
-//                        validator: (value)  {
-//                          if (value.isEmpty) {
-//                            return "Password Tidak Boleh Kosong";
-//                          }
-//                          return null;
-//                        },
-//                        decoration: new InputDecoration(
-//                            fillColor: Colors.red,
-//                            hintText: "Password",
-//                            labelText: "Password",
-//                            focusColor: Colors.red
-//                        ),
-//                      ),
-//                      new Padding(padding: new EdgeInsets.only(top: 20.0)),
-//                      ButtonTheme(
-//                        minWidth: 400.0,
-//                        height: 45.0,
-//                        child: new RaisedButton(
-//                            child: new Text(
-//                              "Login",
-//                              style: new TextStyle(fontSize: 20.0, color: Colors.white),
-//                            ),
-//                            onPressed: () {
-//                              if (_formLogin.currentState.validate()) {
-//                                _login();
-//                              }
-//                            },
-//                            elevation: 0.0,
-//                            color: Color(0xff5b8de7),
-//                            shape: new RoundedRectangleBorder(
-//                                borderRadius: new BorderRadius.circular(30.0)
-//                            )
-//                        ),
-//                      )
                     ],
                   ),
                 )
